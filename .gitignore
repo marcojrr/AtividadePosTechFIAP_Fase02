@@ -1,0 +1,15 @@
+# Dados brutos — ficam no S3, não no Git
+data/
+
+# Credenciais AWS — nunca sobem pro GitHub
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
