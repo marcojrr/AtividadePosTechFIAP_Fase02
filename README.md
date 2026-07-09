@@ -70,13 +70,9 @@ AWS MSK tem custo elevado e complexidade de configuração incompatível com o e
 
 AtividadePosTechFIAP_Fase02/
 ├── README.md
-
 ├── .gitignore
-
 ├── data/                          ← CSVs locais (não versionados)
-
 │   └── raw/
-
 ├── src/
 │   ├── bronze/
 │   │   ├── ingest_batch.py        ← ingestão batch para o S3
