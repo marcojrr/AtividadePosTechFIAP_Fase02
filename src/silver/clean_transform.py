@@ -55,6 +55,9 @@ colunas_alunos = {
 }
 alunos = alunos.rename(columns=colunas_alunos)
 
+# Padroniza todas as colunas restantes para minúsculo
+alunos.columns = alunos.columns.str.lower()
+
 # Converte rede de inteiro para texto
 # A informação do DE-PARA foi retirada do dicionário de dados que vem em conjunto com a base
 mapa_rede_alunos = {1: 'Federal', 2: 'Estadual', 3: 'Municipal', 4: 'Privada'}
@@ -65,11 +68,11 @@ alunos = alunos[alunos['rede'] != 'Privada']
 print(f"  Após remover Privada: {alunos.shape[0]} registros")
 
 # Remove alunos ausentes pois o indicador mede apenas alunos avaliados
-alunos = alunos[alunos['IN_PRESENCA_LP'] == 1]
+alunos = alunos[alunos['in_presenca_lp'] == 1]
 print(f"  Após remover ausentes: {alunos.shape[0]} registros")
 
 # Corrige tipo de IN_ALFABETIZADO
-alunos['IN_ALFABETIZADO'] = alunos['IN_ALFABETIZADO'].astype(int)
+alunos['in_alfabetizado'] = alunos['in_alfabetizado'].astype(int)
 
 alunos = dropa_duplicadas(alunos)
 
