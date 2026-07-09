@@ -67,7 +67,7 @@ AWS MSK tem custo elevado e complexidade de configuração incompatível com o e
 ---
 
 ## 4. Estrutura do Repositório
-
+```text
 AtividadePosTechFIAP_Fase02/
 ├── README.md
 ├── .gitignore
@@ -89,11 +89,11 @@ AtividadePosTechFIAP_Fase02/
 └── infra/
 ├── .env.example
 └── requirements.txt
-
+```
 ---
 
 **Estrutura no S3:**
-
+```text
 alfabetizacao-datalake/
 ├── bronze/
 │   ├── alunos/year=2023/dados.parquet
@@ -117,7 +117,7 @@ alfabetizacao-datalake/
 ├── indicadores_uf/year={ano}/dados.parquet
 ├── indicadores_rede/year={ano}/dados.parquet
 └── evolucao_temporal/dados.parquet
-
+```
 ---
 
 ## 5. Como Executar
