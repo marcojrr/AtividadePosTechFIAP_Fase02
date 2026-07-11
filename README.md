@@ -1,4 +1,4 @@
-# Pipeline de Dados Educacionais — Alfabetização Brasil
+# Pipeline de Dados Educacionais - Alfabetização Brasil
 
 ## 1. Visão Geral
 
@@ -7,7 +7,7 @@ Este projeto implementa uma pipeline de dados escalável na AWS para monitorar o
 **Indicador central:** percentual de alunos com proficiência ≥ 743 pontos em Língua Portuguesa no Saeb ao final do 2º ano do ensino fundamental.
 
 **Fontes de dados:**
-- Microdados de alunos (Saeb/INEP) — 3,8 milhões de registros
+- Microdados de alunos (Saeb/INEP) - 3,8 milhões de registros
 - Metas de alfabetização nacional, estadual e municipal (Base dos Dados)
 - Dados territoriais de municípios e UFs (Base dos Dados)
 
@@ -26,24 +26,24 @@ flowchart TD
     F --> G[Dashboards\nIA/ML]
 ```
 
-**Camada Bronze — Raw Data**
+**Camada Bronze - Raw Data**
 Ingestão dos dados brutos sem transformações de conteúdo. Suporta dois modos:
 - Batch: CSVs convertidos para Parquet e particionados por `year=`
 - Streaming: eventos simulados via Kafka, particionados por `year=/month=/`
 
-**Camada Silver — Dados Tratados**
+**Camada Silver - Dados Tratados**
 Limpeza, padronização e integração das bases:
 - Renomeação de colunas do padrão INEP para padrão Base dos Dados
 - Padronização da coluna `rede` para texto em todas as bases
 - Remoção de registros inválidos e alunos ausentes
 - Join entre microdados de alunos e dados agregados de municípios
 
-**Camada Gold — Camada Analítica**
+**Camada Gold - Camada Analítica**
 Indicadores prontos para consumo em dashboards e modelos de ML:
-- `indicadores_municipio` — taxa real, gap de meta, flag de risco, projeção 2030
-- `indicadores_uf` — comparação regional, desigualdade interna
-- `evolucao_temporal` — comparação 2023 vs 2024 por município
-- `indicadores_rede` — Estadual vs Municipal
+- `indicadores_municipio` - taxa real, gap de meta, flag de risco, projeção 2030
+- `indicadores_uf` - comparação regional, desigualdade interna
+- `evolucao_temporal` - comparação 2023 vs 2024 por município
+- `indicadores_rede` - Estadual vs Municipal
 
 ---
 
@@ -59,10 +59,10 @@ Indicadores prontos para consumo em dashboards e modelos de ML:
 | Versionamento | Git + GitHub | Histórico organizado com Conventional Commits |
 
 **Por que Pandas e não Spark?**
-O volume dos dados (3,8M de registros) é processável em memória local. Spark traria complexidade de infraestrutura sem ganho real nesse escopo. A arquitetura foi desenhada para migração futura para Spark/EMR sem mudanças na lógica de negócio.
+O Pandas foi escolhido por sua maturidade e ampla adoção no ecossistema Python. Para o volume do projeto (3,8M de registros), o processamento em memória é suficiente e performático, e sua API de DataFrames permite transformações complexas com código conciso e legível.
 
 **Por que Kafka simulado e não AWS MSK?**
-AWS MSK tem custo elevado e complexidade de configuração incompatível com o escopo acadêmico. A simulação via `queue.Queue` demonstra o padrão arquitetural produtor/consumidor com fidelidade suficiente para portfólio.
+O Kafka foi selecionado como referência arquitetural por ser o padrão de mercado para pipelines de streaming. A simulação via `queue.Queue` do Python reproduz o padrão produtor/consumidor - com separação de responsabilidades e processamento assíncrono - sem necessidade de infraestrutura dedicada.
 
 ---
 
@@ -77,7 +77,7 @@ AtividadePosTechFIAP_Fase02/
 │   ├── bronze/
 │   │   ├── ingest_batch.py        ← ingestão batch para o S3
 │   │   ├── kafka_producer.py      ← produtor de eventos streaming
-│   │   ├── ingest_streaming.py    ← consumidor — salva eventos no S3
+│   │   ├── ingest_streaming.py    ← consumidor - salva eventos no S3
 │   │   └── main_streaming.py      ← orquestra produtor e consumidor
 │   ├── silver/
 │   │   ├── clean_transform.py     ← limpeza e padronização
@@ -136,19 +136,19 @@ pip install boto3 pandas pyarrow
 ### Executar os pipelines em ordem
 
 ```bash
-# 1. Camada Bronze — batch
+# 1. Camada Bronze - batch
 python src/bronze/ingest_batch.py
 
-# 2. Camada Bronze — streaming simulado
+# 2. Camada Bronze - streaming simulado
 python src/bronze/main_streaming.py
 
-# 3. Camada Silver — limpeza e transformação
+# 3. Camada Silver - limpeza e transformação
 python src/silver/clean_transform.py
 
-# 4. Camada Silver — integração
+# 4. Camada Silver - integração
 python src/silver/integrate_sources.py
 
-# 5. Camada Gold — indicadores analíticos
+# 5. Camada Gold - indicadores analíticos
 python src/gold/build_indicators.py
 ```
 
@@ -157,10 +157,10 @@ python src/gold/build_indicators.py
 ## 6. Decisões Arquiteturais e Trade-offs
 
 **Batch vs Streaming**
-Os dados históricos (2023-2024) são processados em batch — carregamento único, sem necessidade de tempo real. O streaming foi implementado para simular a chegada de novos resultados de avaliação, demonstrando que a arquitetura suporta os dois padrões. Em produção, o Kafka seria substituído por AWS MSK ou Kinesis.
+Os dados históricos (2023-2024) são processados em batch - carregamento único, sem necessidade de tempo real. O streaming foi implementado para simular a chegada de novos resultados de avaliação, demonstrando que a arquitetura suporta os dois padrões.
 
 **Particionamento por `year=`**
-Segue o padrão Hive, compatível com AWS Athena e Apache Spark. Permite pushdown de predicados — queries que filtram por ano leem apenas as partições necessárias, reduzindo custo e tempo.
+Segue o padrão Hive, compatível com AWS Athena e Apache Spark. Permite pushdown de predicados, queries que filtram por ano leem apenas as partições necessárias, reduzindo custo e tempo.
 
 **Metas na Gold, não na Silver**
 As colunas de meta foram mantidas fora da tabela integrada da Silver para evitar repetir os mesmos valores de meta para cada um dos 3,3 milhões de registros de alunos. As metas entram apenas na Gold, após a agregação por município.
@@ -186,25 +186,25 @@ Para o volume atual (3,8M registros), Pandas é suficiente e mais simples. A arq
 ### Base UF e Município
 | Decisão | Justificativa |
 |---|---|
-| `rede = 0` removido (1 registro em UF, 398 em Município) | Valor inválido — não consta no dicionário |
+| `rede = 0` removido (1 registro em UF, 398 em Município) | Valor inválido - não consta no dicionário |
 | `rede = 5` → `'Pública'` | Confirmado pelo dicionário oficial (Estadual + Municipal) |
-| Nulos em `proporcao_aluno_nivel_X` mantidos | Dado só disponível a partir de 2024 — ausência esperada em 2023 |
+| Nulos em `proporcao_aluno_nivel_X` mantidos | Dado só disponível a partir de 2024 - ausência esperada em 2023 |
 
 ### Simulação Streaming
 | Decisão | Justificativa |
 |---|---|
 | UF Roraima (RR) excluída | Não consta nos microdados do Saeb disponíveis |
-| `IN_PREENCHIMENTO_LP` excluído dos eventos | No streaming, todos os eventos representam alunos que fizeram a prova — valor seria sempre 1 |
+| `IN_PREENCHIMENTO_LP` excluído dos eventos | No streaming, todos os eventos representam alunos que fizeram a prova - valor seria sempre 1 |
 
 ---
 
 ## 8. FinOps
 
 ### Estratégias implementadas
-- **Parquet com compressão Snappy** — reduz tamanho dos arquivos em ~75% vs CSV
-- **Particionamento por `year=`** — evita full scan em queries filtradas por ano
-- **Arquivos temporários deletados** — nenhum dado intermediário persiste localmente
-- **AWS Academy Learner Lab** — ambiente com $50 de crédito, sem custo real
+- **Parquet com compressão Snappy** - reduz tamanho dos arquivos em ~75% vs CSV
+- **Particionamento por `year=`** - evita full scan em queries filtradas por ano
+- **Arquivos temporários deletados** - nenhum dado intermediário persiste localmente
+- **AWS Academy Learner Lab** - ambiente com $50 de crédito, sem custo real
 
 ### Estimativa de custo mensal (produção)
 
@@ -230,7 +230,7 @@ A camada Gold habilita diretamente os seguintes casos de uso:
 A tabela `evolucao_temporal` com `taxa_2023`, `taxa_2024` e `variacao` permite treinar modelos de regressão para prever a taxa de alfabetização futura por município, usando features como rede, UF e histórico de evolução.
 
 **Clusterização de municípios por vulnerabilidade**
-A tabela `indicadores_municipio` com `taxa_real_calculada`, `gap_meta_2024`, `flag_risco` e `crescimento_anual_necessario` permite clusterizar municípios por nível de vulnerabilidade educacional — identificando grupos que precisam de intervenção prioritária.
+A tabela `indicadores_municipio` com `taxa_real_calculada`, `gap_meta_2024`, `flag_risco` e `crescimento_anual_necessario` permite clusterizar municípios por nível de vulnerabilidade educacional - identificando grupos que precisam de intervenção prioritária.
 
 **Análise de desigualdade regional**
 A coluna `desigualdade_interna` em `indicadores_uf` quantifica a disparidade entre o melhor e pior município de cada estado, permitindo identificar onde políticas de equalização seriam mais impactantes.
@@ -242,8 +242,8 @@ O indicador `crescimento_anual_necessario` permite simular cenários: dado o rit
 
 ## 10. Observações e Limitações
 
-- Os dados disponíveis cobrem apenas 2023 e 2024 — análises de tendência de longo prazo requerem anos anteriores
+- Os dados disponíveis cobrem apenas 2023 e 2024 - análises de tendência de longo prazo requerem anos anteriores
 - UF Roraima (RR) não consta nos microdados do Saeb disponíveis e foi excluída da simulação de streaming
-- O Kafka foi simulado via `queue.Queue` do Python — em produção seria substituído por AWS MSK ou Confluent Cloud
-- As credenciais do AWS Academy Learner Lab são temporárias e expiram a cada sessão — o arquivo `~/.aws/credentials` precisa ser atualizado a cada novo acesso
-- A camada Gold foi calculada apenas para redes Municipal e Estadual — a rede Federal tem representação insignificante no 2º ano do ensino fundamental
+- O Kafka foi simulado via `queue.Queue` do Python - em produção seria substituído por AWS MSK ou Confluent Cloud
+- As credenciais do AWS Academy Learner Lab são temporárias e expiram a cada sessão - o arquivo `~/.aws/credentials` precisa ser atualizado a cada novo acesso
+- A camada Gold foi calculada apenas para redes Municipal e Estadual - a rede Federal tem representação insignificante no 2º ano do ensino fundamental
